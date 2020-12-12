@@ -1,0 +1,8 @@
+{
+	"domain": "deconz_hue_switch",
+	"name": "deCONZ Hue switch",
+	"documentation": "https://github.com/johannes-mueller/deconz_hue_switch",
+	"dependencies": ['light', 'deconz'],
+	"codeowners": ['@johannes-mueller'],
+	"requirements": []
+}
