@@ -72,7 +72,9 @@ def setup(hass, config):
         if lights is None:
             return
         button = event.data['event']
-        button_map[button](lights)
+        handler_function = button_map.get(button)
+        if handler_function is not None:
+            handler_function(lights)
 
     dimming_lights = dict()
 

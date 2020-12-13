@@ -37,6 +37,11 @@ non_mapped_btn1_event = Event('type', data={
     'event': 1002
 })
 
+unknown_button_event = Event('type', data={
+    'id': 'switch.foo',
+    'event': 1000
+})
+
 dim_up_253_event = Event('type', data={
     'id': 'switch.dim_253',
     'event': 2002

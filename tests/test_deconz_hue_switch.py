@@ -58,6 +58,15 @@ def test_component_event_switch_unmapped(mock_hass):
     mock_hass.async_add_job.assert_not_called()
 
 
+def test_component_event_unknown_button(mock_hass):
+    DHS.setup(mock_hass, config)
+    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+    handler(unknown_button_event)
+
+    mock_hass.services.async_call.assert_not_called()
+    mock_hass.async_add_job.assert_not_called()
+
+
 @pytest.mark.parametrize('event, lights, brightness, transition', [
     (dim_up_253_event, ['light.dim_253'], 255, 0.25),
     (dim_up_3_event, ['light.dim_3'], 7, 0.25),
