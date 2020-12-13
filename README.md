@@ -1,4 +1,4 @@
-
+[![pytest](https://github.com/johannes-mueller/deconz_hue_switch/workflows/pytest/badge.svg)](https://github.com/johannes-mueller/deconz_hue_switch/actions?query=workflow%3Apytest)
 # deCONZ Hue Switch for Home Assistant
 
 Custom component for Home Assistant to handle Philips dim switches operated by
