@@ -6,6 +6,8 @@ from homeassistant.components.light import ATTR_BRIGHTNESS, ATTR_TRANSITION
 
 from . import DOMAIN
 
+DEFAULT_DIM_STEP_NUMBER = 8
+
 def setup(hass, config):
     def toggle_lights(lights):
         turn_on = any([not homeassistant.components.light.is_on(hass, light) for light in lights])
@@ -19,10 +21,10 @@ def setup(hass, config):
             hass.async_add_job(hass.services.async_call('light', new_state, data))
 
     def dim_up(lights):
-        change_brightness(lights, 4)
+        change_brightness(lights, dim_step)
 
     def dim_down(lights):
-        change_brightness(lights, -4)
+        change_brightness(lights, -dim_step)
 
     def start_dim(lights, target):
         for light in lights:
@@ -93,6 +95,8 @@ def setup(hass, config):
         if not homeassistant.components.light.is_on(hass, light):
             return 0.0
         return hass.states.get(light).attributes[ATTR_BRIGHTNESS]
+
+    dim_step = 256 / config.get('dim_step_number', DEFAULT_DIM_STEP_NUMBER)
 
     dimming_lights = dict()
 

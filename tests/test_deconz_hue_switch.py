@@ -70,12 +70,12 @@ def test_component_event_unknown_button(mock_hass):
 
 @pytest.mark.parametrize('event, lights, brightness, transition', [
     (dim_up_253_event, ['light.dim_253'], 255, 0.25),
-    (dim_up_3_event, ['light.dim_3'], 7, 0.25),
-    (dim_down_253_event, ['light.dim_253'], 249, 0.25),
+    (dim_up_3_event, ['light.dim_3'], 35, 0.25),
+    (dim_down_253_event, ['light.dim_253'], 221, 0.25),
     (dim_down_3_event, ['light.dim_3'], 0, 0.25),
     (start_dim_up_3_event, ['light.dim_3'], 255, 10.0),
     (start_dim_down_253_event, ['light.dim_253'], 0, 10.0),
-    (dim_up_event_from_zero_brightness, ['light.foo'], 4, 0.25),
+    (dim_up_event_from_zero_brightness, ['light.foo'], 32, 0.25),
     (start_dim_up_event_from_zero_brightness, ['light.foo'], 255, 10.0)
 ])
 def test_dim_event(mock_hass, event, lights, brightness, transition):
@@ -128,3 +128,16 @@ def test_stop_dim_after_start(mock_hass, start_event, stop_event, stop_time, lig
     assert mock_hass.services.async_call.mock_calls[0].args[2][ATTR_ENTITY_ID] == 'light.dim_253'
     assert mock_hass.services.async_call.mock_calls[0].args[2][ATTR_BRIGHTNESS] == brightness
     assert mock_hass.services.async_call.mock_calls[0].args[2][ATTR_TRANSITION] == 0.0
+
+
+def test_dim_up_bigger_step(mock_hass):
+    my_config = config.copy()
+    my_config['dim_step_number'] = 16
+
+    DHS.setup(mock_hass, my_config)
+    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+    handler(dim_up_event_from_zero_brightness)
+
+    mock_hass.async_add_job.assert_called_once()
+    mock_hass.services.async_call.assert_called_with('light', SERVICE_TURN_ON, mock.ANY)
+    assert mock_hass.services.async_call.mock_calls[0].args[2][ATTR_BRIGHTNESS] == 16.0
