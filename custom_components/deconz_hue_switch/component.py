@@ -71,10 +71,23 @@ def setup(hass, config):
         lights = switch_map.get(event.data['id'])
         if lights is None:
             return
+        lights = flatten_lights_groups(lights)
         button = event.data['event']
         handler_function = button_map.get(button)
         if handler_function is not None:
             handler_function(lights)
+
+    def flatten_lights_groups(lights):
+        ret = {}
+        for light, attrs in lights.items():
+            ret.update(turn_group_into_lights(light, attrs))
+        return ret
+
+    def turn_group_into_lights(light, attrs):
+        if not light.startswith('group'):
+            return {light: attrs}
+        group, name = light.split('.')
+        return {light.strip(): attrs for light in config[group][name]['entities'].split(',')}
 
     dimming_lights = dict()
 

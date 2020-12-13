@@ -8,6 +8,7 @@ config = {
     DOMAIN: {
         'switch_map': {
             'switch.foo': {'light.foo': None},
+            'switch.foobar': {'group.foobar': None},
             'switch.bar': {'light.bar': None},
             'switch.weak': {'light.weak': { 'brightness': 128 }},
             'switch.two': {'light.two1': None, 'light.two2': None},
@@ -16,11 +17,17 @@ config = {
             'switch.dim_253': {'light.dim_253': None},
             'switch.dim_3': {'light.dim_3': None}
         }
+    },
+    'group': {
+        'foobar': {
+            'entities': 'light.foo, light.foobar'
+        }
     }
 }
 
 state_dict = {
     'light.foo': (STATE_OFF, None),
+    'light.foobar': (STATE_OFF, None),
     'light.bar': (STATE_ON, None),
     'light.weak': (STATE_OFF, None),
     'light.two1': (STATE_OFF, None),

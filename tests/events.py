@@ -12,18 +12,23 @@ bar_btn1_event = Event('type', data={
     'event': 1002
 })
 
-group_two_btn1_event = Event('type', data={
+multiple_two_btn1_event = Event('type', data={
     'id': 'switch.two',
     'event': 1002
 })
 
-group_two_off_btn1_event = Event('type', data={
+multiple_two_off_btn1_event = Event('type', data={
     'id': 'switch.two_off',
     'event': 1002
 })
 
-group_three_btn1_event = Event('type', data={
+multiple_three_btn1_event = Event('type', data={
     'id': 'switch.three',
+    'event': 1002
+})
+
+group_foobar_btn1_event = Event('type', data={
+    'id': 'switch.foobar',
     'event': 1002
 })
 

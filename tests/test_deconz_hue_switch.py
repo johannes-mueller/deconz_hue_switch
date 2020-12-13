@@ -33,9 +33,10 @@ def test_setup_component(mock_hass):
     (foo_btn1_event, ['light.foo'], SERVICE_TURN_ON, [{}]),
     (bar_btn1_event, ['light.bar'], SERVICE_TURN_OFF, [{}]),
     (weak_brightness_btn1_event, ['light.weak'], SERVICE_TURN_ON, [{ATTR_BRIGHTNESS: 128}]),
-    (group_two_btn1_event, ['light.two1', 'light.two2'], SERVICE_TURN_ON, [{}]),
-    (group_two_off_btn1_event, ['light.two_off1', 'light.two_off2'], SERVICE_TURN_OFF, [{}, {}]),
-    (group_three_btn1_event, ['light.three1', 'light.three2', 'light.three3'], SERVICE_TURN_ON, [{}, {}, {}])])
+    (multiple_two_btn1_event, ['light.two1', 'light.two2'], SERVICE_TURN_ON, [{}]),
+    (multiple_two_off_btn1_event, ['light.two_off1', 'light.two_off2'], SERVICE_TURN_OFF, [{}, {}]),
+    (multiple_three_btn1_event, ['light.three1', 'light.three2', 'light.three3'], SERVICE_TURN_ON, [{}, {}, {}]),
+    (group_foobar_btn1_event, ['light.foo', 'light.foobar'], SERVICE_TURN_ON, [{}, {}, {}])])
 def test_component_event_switch(mock_hass, event, lights, on_off, state_data):
     DHS.setup(mock_hass, config)
     handler = handler = mock_hass.bus.listen.mock_calls[0].args[1]
