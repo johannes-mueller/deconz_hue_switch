@@ -88,6 +88,17 @@ def test_dim_event(mock_hass, event, lights, brightness, transition):
     assert mock_hass.services.async_call.mock_calls[0].args[2][ATTR_TRANSITION] == transition
 
 
+def test_start_dim_after_start(mock_hass):
+    DHS.setup(mock_hass, config)
+    handler = handler = mock_hass.bus.listen.mock_calls[0].args[1]
+    handler(start_dim_down_253_event)
+    mock_hass.reset_mock()
+
+    handler(start_dim_down_253_event)
+    mock_hass.services.async_call.assert_not_called()
+    mock_hass.async_add_job.assert_not_called()
+
+
 def test_stop_dim_no_start(mock_hass):
     DHS.setup(mock_hass, config)
     handler = handler = mock_hass.bus.listen.mock_calls[0].args[1]

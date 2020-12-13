@@ -26,6 +26,8 @@ def setup(hass, config):
 
     def start_dim(lights, target):
         for light in lights:
+            if light in dimming_lights:
+                continue
             brightness = hass.states.get(light).attributes[ATTR_BRIGHTNESS]
             data = {
                 ATTR_ENTITY_ID: light,
