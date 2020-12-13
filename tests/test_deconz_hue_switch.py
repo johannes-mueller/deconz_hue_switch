@@ -74,7 +74,9 @@ def test_component_event_unknown_button(mock_hass):
     (dim_down_253_event, ['light.dim_253'], 249, 0.25),
     (dim_down_3_event, ['light.dim_3'], 0, 0.25),
     (start_dim_up_3_event, ['light.dim_3'], 255, 10.0),
-    (start_dim_down_253_event, ['light.dim_253'], 0, 10.0)
+    (start_dim_down_253_event, ['light.dim_253'], 0, 10.0),
+    (dim_up_event_from_zero_brightness, ['light.foo'], 4, 0.25),
+    (start_dim_up_event_from_zero_brightness, ['light.foo'], 255, 10.0)
 ])
 def test_dim_event(mock_hass, event, lights, brightness, transition):
     DHS.setup(mock_hass, config)

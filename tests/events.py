@@ -86,3 +86,13 @@ stop_dim_down_253_event = Event('type', data={
     'id': 'switch.dim_253',
     'event': 3003
 })
+
+dim_up_event_from_zero_brightness = Event('type', data={
+    'id': 'switch.foo',
+    'event': 2002
+})
+
+start_dim_up_event_from_zero_brightness = Event('type', data={
+    'id': 'switch.foo',
+    'event': 2001
+})

@@ -28,14 +28,13 @@ def setup(hass, config):
         for light in lights:
             if light in dimming_lights:
                 continue
-            brightness = hass.states.get(light).attributes[ATTR_BRIGHTNESS]
             data = {
                 ATTR_ENTITY_ID: light,
                 ATTR_BRIGHTNESS: target,
                 ATTR_TRANSITION: 10.0
             }
+            dimming_lights[light] = (brightness_of(light), target, datetime.datetime.now())
             hass.async_add_job(hass.services.async_call('light', SERVICE_TURN_ON, data))
-            dimming_lights[light] = (brightness, target, datetime.datetime.now())
 
     def start_dim_up(lights):
         start_dim(lights, 255)
@@ -60,8 +59,7 @@ def setup(hass, config):
 
     def change_brightness(lights, amount):
         for light in lights:
-            attrs = hass.states.get(light).attributes
-            target = min(max(attrs[ATTR_BRIGHTNESS] + amount, 0), 255)
+            target = min(max(brightness_of(light) + amount, 0), 255)
             data = {
                 ATTR_ENTITY_ID: light,
                 ATTR_BRIGHTNESS: target,
@@ -90,6 +88,11 @@ def setup(hass, config):
             return {light: attrs}
         group, name = light.split('.')
         return {light.strip(): attrs for light in config[group][name]['entities'].split(',')}
+
+    def brightness_of(light):
+        if not homeassistant.components.light.is_on(hass, light):
+            return 0.0
+        return hass.states.get(light).attributes[ATTR_BRIGHTNESS]
 
     dimming_lights = dict()
 
