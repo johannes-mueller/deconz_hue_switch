@@ -39,7 +39,7 @@ def test_setup_component(mock_hass):
     (group_foobar_btn1_event, ['light.foo', 'light.foobar'], SERVICE_TURN_ON, [{}, {}, {}])])
 def test_component_event_switch(mock_hass, event, lights, on_off, state_data):
     DHS.setup(mock_hass, config)
-    handler = handler = mock_hass.bus.listen.mock_calls[0].args[1]
+    handler = mock_hass.bus.listen.mock_calls[0].args[1]
     handler(event)
     assert mock_hass.async_add_job.call_count == len(lights)
     for i, (light, state_attrs) in enumerate(zip(lights, state_data)):
@@ -80,7 +80,7 @@ def test_component_event_unknown_button(mock_hass):
 ])
 def test_dim_event(mock_hass, event, lights, brightness, transition):
     DHS.setup(mock_hass, config)
-    handler = handler = mock_hass.bus.listen.mock_calls[0].args[1]
+    handler = mock_hass.bus.listen.mock_calls[0].args[1]
     handler(event)
 
     mock_hass.async_add_job.assert_called_once()
@@ -92,7 +92,7 @@ def test_dim_event(mock_hass, event, lights, brightness, transition):
 
 def test_start_dim_after_start(mock_hass):
     DHS.setup(mock_hass, config)
-    handler = handler = mock_hass.bus.listen.mock_calls[0].args[1]
+    handler = mock_hass.bus.listen.mock_calls[0].args[1]
     handler(start_dim_down_253_event)
     mock_hass.reset_mock()
 
@@ -103,7 +103,7 @@ def test_start_dim_after_start(mock_hass):
 
 def test_stop_dim_no_start(mock_hass):
     DHS.setup(mock_hass, config)
-    handler = handler = mock_hass.bus.listen.mock_calls[0].args[1]
+    handler = mock_hass.bus.listen.mock_calls[0].args[1]
     handler(stop_dim_down_253_event)
 
     mock_hass.services.async_call.assert_not_called()
@@ -116,7 +116,7 @@ def test_stop_dim_no_start(mock_hass):
 ])
 def test_stop_dim_after_start(mock_hass, start_event, stop_event, stop_time, light, brightness):
     DHS.setup(mock_hass, config)
-    handler = handler = mock_hass.bus.listen.mock_calls[0].args[1]
+    handler = mock_hass.bus.listen.mock_calls[0].args[1]
     with freeze_time('2020-12-13 00:00:00'):
         handler(start_event)
     mock_hass.reset_mock()
