@@ -11,14 +11,14 @@ DEFAULT_DIM_STEP_NUMBER = 8
 def setup(hass, config):
     def toggle_lights(lights):
         turn_on = any([not homeassistant.components.light.is_on(hass, light) for light in lights])
-        new_state = SERVICE_TURN_ON if turn_on else SERVICE_TURN_OFF
+        turn_command = SERVICE_TURN_ON if turn_on else SERVICE_TURN_OFF
         for light, attrs in lights.items():
             data = {
                 ATTR_ENTITY_ID: light
             }
             if attrs is not None:
                 data.update(attrs)
-            hass.async_add_job(hass.services.async_call('light', new_state, data))
+            hass.async_add_job(hass.services.async_call('light', turn_command, data))
 
     def dim_up(lights):
         change_brightness(lights, dim_step)
@@ -27,16 +27,11 @@ def setup(hass, config):
         change_brightness(lights, -dim_step)
 
     def start_dim(lights, target):
-        for light in lights:
-            if light in dimming_lights:
-                continue
-            data = {
-                ATTR_ENTITY_ID: light,
-                ATTR_BRIGHTNESS: target,
-                ATTR_TRANSITION: 10.0
-            }
-            dimming_lights[light] = (brightness_of(light), target, datetime.datetime.now())
-            hass.async_add_job(hass.services.async_call('light', SERVICE_TURN_ON, data))
+        for light in filter(lambda l: l not in dimming_lights, lights):
+            dimming_lights[light] = (
+                brightness_of(light), target, datetime.datetime.now()
+            )
+            make_brightness_transition(light, target, transition=10.0)
 
     def start_dim_up(lights):
         start_dim(lights, 255)
@@ -51,23 +46,21 @@ def setup(hass, config):
                 continue
             brightness, target, start_time = dimming
             seconds = (datetime.datetime.now() - start_time).total_seconds()
-            stop_target = round(brightness+(target-brightness)/10.0*seconds)
-            data = {
-                ATTR_ENTITY_ID: light,
-                ATTR_BRIGHTNESS: stop_target,
-                ATTR_TRANSITION: 0.0
-            }
-            hass.async_add_job(hass.services.async_call('light', SERVICE_TURN_ON, data))
+            stop_target = round(brightness + (target - brightness) / 10.0 * seconds)
+            make_brightness_transition(light, stop_target, transition=0.0)
 
     def change_brightness(lights, amount):
         for light in lights:
             target = min(max(brightness_of(light) + amount, 0), 255)
-            data = {
-                ATTR_ENTITY_ID: light,
-                ATTR_BRIGHTNESS: target,
-                ATTR_TRANSITION: 0.25
-            }
-            hass.async_add_job(hass.services.async_call('light', SERVICE_TURN_ON, data))
+            make_brightness_transition(light, target, transition=0.25)
+
+    def make_brightness_transition(light, brightness, transition):
+        data = {
+            ATTR_ENTITY_ID: light,
+            ATTR_BRIGHTNESS: brightness,
+            ATTR_TRANSITION: transition
+        }
+        hass.async_add_job(hass.services.async_call('light', SERVICE_TURN_ON, data))
 
     def handle_event(event):
         lights = switch_map.get(event.data['id'])
