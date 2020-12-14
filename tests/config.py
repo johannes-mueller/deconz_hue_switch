@@ -1,6 +1,6 @@
 """config for the to the test suite"""
 
-from custom_components.deconz_hue_switch import DOMAIN
+from custom_components.deconz_hue_switch.component import DOMAIN
 from homeassistant.const import STATE_ON, STATE_OFF
 from homeassistant.core import State
 
@@ -10,7 +10,7 @@ config = {
             'switch.foo': {'light.foo': None},
             'switch.foobar': {'group.foobar': None},
             'switch.bar': {'light.bar': None},
-            'switch.weak': {'light.weak': { 'brightness': 128 }},
+            'switch.weak': {'light.weak': {'brightness': 128}},
             'switch.two': {'light.two1': None, 'light.two2': None},
             'switch.two_off': {'light.two_off1': None, 'light.two_off2': None},
             'switch.three': {'light.three1': None, 'light.three2': None, 'light.three3': None},

@@ -8,11 +8,14 @@ from homeassistant import core
 
 from .config import states
 
+
 def is_state(entity_id, entity_state):
     return states[entity_id].state == entity_state
 
+
 def get_state(entity_id):
     return states.get(entity_id)
+
 
 @pytest.fixture
 def mock_hass():

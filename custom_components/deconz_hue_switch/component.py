@@ -6,9 +6,10 @@ from homeassistant.const import ATTR_ENTITY_ID, SERVICE_TURN_ON, SERVICE_TURN_OF
 import homeassistant.components.light
 from homeassistant.components.light import ATTR_BRIGHTNESS, ATTR_TRANSITION
 
-from . import DOMAIN
 
+DOMAIN = "deconz_hue_switch"
 DEFAULT_DIM_STEP_NUMBER = 8
+
 
 def setup(hass, config):
     def toggle_lights(lights):

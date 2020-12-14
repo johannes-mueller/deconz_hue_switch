@@ -1,4 +1,5 @@
 """Custom component deCONZ HUE switch"""
-DOMAIN="deconz_hue_switch"
 
-from .component import *
+__all__ = ["component"]
+
+from .component import setup
