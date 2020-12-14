@@ -1,5 +1,7 @@
 import datetime
 
+import logging
+
 from homeassistant.const import ATTR_ENTITY_ID, SERVICE_TURN_ON, SERVICE_TURN_OFF
 import homeassistant.components.light
 from homeassistant.components.light import ATTR_BRIGHTNESS, ATTR_TRANSITION
@@ -18,6 +20,7 @@ def setup(hass, config):
             }
             if attrs is not None:
                 data.update(attrs)
+            _LOGGER.info("%s %s", turn_command, light)
             hass.async_add_job(hass.services.async_call('light', turn_command, data))
 
     def dim_up(lights):
@@ -60,9 +63,11 @@ def setup(hass, config):
             ATTR_BRIGHTNESS: brightness,
             ATTR_TRANSITION: transition
         }
+        _LOGGER.info("changing brighness of %s to %.2f; transition: %.2f", light, brightness, transition)
         hass.async_add_job(hass.services.async_call('light', SERVICE_TURN_ON, data))
 
     def handle_event(event):
+        _LOGGER.info("deconz_event received %s %s", event.data['id'], event.data['event'])
         lights = switch_map.get(event.data['id'])
         if lights is None:
             return
@@ -102,6 +107,8 @@ def setup(hass, config):
         3002: dim_down,
         3003: stop_dim
     }
+
+    _LOGGER = logging.getLogger(__name__)
 
     switch_map = config[DOMAIN]['switch_map']
     hass.bus.listen('deconz_event', handle_event)
