@@ -2,4 +2,4 @@
 
 __all__ = ["component"]
 
-from .component import setup
+from .component import async_setup

@@ -3,6 +3,7 @@ import types
 
 from unittest import mock
 
+import asyncio
 import pytest
 
 from freezegun import freeze_time
@@ -20,11 +21,12 @@ from . import events as EV
 
 import custom_components.deconz_hue_switch as DHS
 
+pytestmark = pytest.mark.asyncio
 
-def test_setup_component(mock_hass):
-    assert DHS.setup(mock_hass, config)
-    mock_hass.bus.listen.assert_called_once_with('deconz_event', mock.ANY)
-    assert isinstance(mock_hass.bus.listen.mock_calls[0].args[1], types.FunctionType)
+async def test_async_setup_component(mock_hass):
+    assert await DHS.async_setup(mock_hass, config)
+    mock_hass.bus.async_listen.assert_called_once_with('deconz_event', mock.ANY)
+    assert isinstance(mock_hass.bus.async_listen.mock_calls[0].args[1], types.FunctionType)
 
 
 @pytest.mark.parametrize('event, lights, on_off, state_data', [
@@ -35,9 +37,9 @@ def test_setup_component(mock_hass):
     (EV.multiple_two_off_btn1_event, ['light.two_off1', 'light.two_off2'], SERVICE_TURN_OFF, [{}, {}]),
     (EV.multiple_three_btn1_event, ['light.three1', 'light.three2', 'light.three3'], SERVICE_TURN_ON, [{}, {}, {}]),
     (EV.group_foobar_btn1_event, ['light.foo', 'light.foobar'], SERVICE_TURN_ON, [{}, {}, {}])])
-def test_component_event_switch(mock_hass, event, lights, on_off, state_data):
-    DHS.setup(mock_hass, config)
-    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+async def test_component_event_switch(mock_hass, event, lights, on_off, state_data):
+    await DHS.async_setup(mock_hass, config)
+    handler = mock_hass.bus.async_listen.mock_calls[0].args[1]
     handler(event)
     assert mock_hass.async_add_job.call_count == len(lights)
     for i, (light, state_attrs) in enumerate(zip(lights, state_data)):
@@ -48,18 +50,18 @@ def test_component_event_switch(mock_hass, event, lights, on_off, state_data):
             assert call.args[2][key] == value
 
 
-def test_component_event_switch_unmapped(mock_hass):
-    DHS.setup(mock_hass, config)
-    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+async def test_component_event_switch_unmapped(mock_hass):
+    await DHS.async_setup(mock_hass, config)
+    handler = mock_hass.bus.async_listen.mock_calls[0].args[1]
     handler(EV.non_mapped_btn1_event)
 
     mock_hass.services.async_call.assert_not_called()
     mock_hass.async_add_job.assert_not_called()
 
 
-def test_component_event_unknown_button(mock_hass):
-    DHS.setup(mock_hass, config)
-    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+async def test_component_event_unknown_button(mock_hass):
+    await DHS.async_setup(mock_hass, config)
+    handler = mock_hass.bus.async_listen.mock_calls[0].args[1]
     handler(EV.unknown_button_event)
 
     mock_hass.services.async_call.assert_not_called()
@@ -76,9 +78,9 @@ def test_component_event_unknown_button(mock_hass):
     (EV.dim_up_event_from_zero_brightness, ['light.foo'], 32, 0.25),
     (EV.start_dim_up_event_from_zero_brightness, ['light.foo'], 255, 10.0)
 ])
-def test_dim_event(mock_hass, event, lights, brightness, transition):
-    DHS.setup(mock_hass, config)
-    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+async def test_dim_event(mock_hass, event, lights, brightness, transition):
+    await DHS.async_setup(mock_hass, config)
+    handler = mock_hass.bus.async_listen.mock_calls[0].args[1]
     handler(event)
 
     mock_hass.async_add_job.assert_called_once()
@@ -89,9 +91,9 @@ def test_dim_event(mock_hass, event, lights, brightness, transition):
     assert attrs[ATTR_TRANSITION] == transition
 
 
-def test_start_dim_after_start(mock_hass):
-    DHS.setup(mock_hass, config)
-    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+async def test_start_dim_after_start(mock_hass):
+    await DHS.async_setup(mock_hass, config)
+    handler = mock_hass.bus.async_listen.mock_calls[0].args[1]
     handler(EV.start_dim_down_253_event)
     mock_hass.reset_mock()
 
@@ -100,9 +102,9 @@ def test_start_dim_after_start(mock_hass):
     mock_hass.async_add_job.assert_not_called()
 
 
-def test_stop_dim_no_start(mock_hass):
-    DHS.setup(mock_hass, config)
-    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+async def test_stop_dim_no_start(mock_hass):
+    await DHS.async_setup(mock_hass, config)
+    handler = mock_hass.bus.async_listen.mock_calls[0].args[1]
     handler(EV.stop_dim_down_253_event)
 
     mock_hass.services.async_call.assert_not_called()
@@ -113,9 +115,9 @@ def test_stop_dim_no_start(mock_hass):
     (EV.start_dim_down_253_event, EV.stop_dim_down_253_event, '2020-12-13 00:00:02', 'light.dim_253', 202),
     (EV.start_dim_down_253_event, EV.stop_dim_down_253_event, '2020-12-13 00:00:05', 'light.dim_253', 126)
 ])
-def test_stop_dim_after_start(mock_hass, start_event, stop_event, stop_time, light, brightness):
-    DHS.setup(mock_hass, config)
-    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+async def test_stop_dim_after_start(mock_hass, start_event, stop_event, stop_time, light, brightness):
+    await DHS.async_setup(mock_hass, config)
+    handler = mock_hass.bus.async_listen.mock_calls[0].args[1]
     with freeze_time('2020-12-13 00:00:00'):
         handler(start_event)
     mock_hass.reset_mock()
@@ -130,12 +132,12 @@ def test_stop_dim_after_start(mock_hass, start_event, stop_event, stop_time, lig
     assert attrs[ATTR_TRANSITION] == 0.0
 
 
-def test_dim_up_bigger_step(mock_hass):
+async def test_dim_up_bigger_step(mock_hass):
     my_config = config.copy()
     my_config['dim_step_number'] = 16
 
-    DHS.setup(mock_hass, my_config)
-    handler = mock_hass.bus.listen.mock_calls[0].args[1]
+    await DHS.async_setup(mock_hass, my_config)
+    handler = mock_hass.bus.async_listen.mock_calls[0].args[1]
     handler(EV.dim_up_event_from_zero_brightness)
 
     mock_hass.async_add_job.assert_called_once()

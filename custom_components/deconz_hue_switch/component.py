@@ -11,7 +11,7 @@ DOMAIN = "deconz_hue_switch"
 DEFAULT_DIM_STEP_NUMBER = 8
 
 
-def setup(hass, config):
+async def async_setup(hass, config):
     def toggle_lights(lights):
         turn_on = any([not homeassistant.components.light.is_on(hass, light) for light in lights])
         turn_command = SERVICE_TURN_ON if turn_on else SERVICE_TURN_OFF
@@ -95,6 +95,9 @@ def setup(hass, config):
             return 0.0
         return hass.states.get(light).attributes[ATTR_BRIGHTNESS]
 
+    _LOGGER = logging.getLogger(__name__)
+    _LOGGER.debug("Component %s starting" % DOMAIN)
+
     dim_step = 256 / config.get('dim_step_number', DEFAULT_DIM_STEP_NUMBER)
 
     dimming_lights = dict()
@@ -109,9 +112,10 @@ def setup(hass, config):
         3003: stop_dim
     }
 
-    _LOGGER = logging.getLogger(__name__)
-
     switch_map = config[DOMAIN]['switch_map']
-    hass.bus.listen('deconz_event', handle_event)
+
+    hass.bus.async_listen('deconz_event', handle_event)
+
+    _LOGGER.debug("Component %s started" % DOMAIN)
 
     return True
