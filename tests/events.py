@@ -37,6 +37,11 @@ weak_brightness_btn1_event = Event('type', data={
     'event': 1002
 })
 
+weak_on_brightness_btn1_event = Event('type', data={
+    'id': 'switch.weak_on',
+    'event': 1002
+})
+
 non_mapped_btn1_event = Event('type', data={
     'id': 'switch.unmapped',
     'event': 1002

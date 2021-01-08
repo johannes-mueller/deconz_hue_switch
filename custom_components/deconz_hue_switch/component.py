@@ -19,7 +19,7 @@ async def async_setup(hass, config):
             data = {
                 ATTR_ENTITY_ID: light
             }
-            if attrs is not None:
+            if attrs is not None and turn_on:
                 data.update(attrs)
             _LOGGER.info("%s %s", turn_command, light)
             hass.async_add_job(hass.services.async_call('light', turn_command, data))
