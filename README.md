@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> This repository is archived. I won't make any updates as I switched from
+> deconz to zigbee2mqtt.
+
 [![pytest](https://github.com/johannes-mueller/deconz_hue_switch/workflows/pytest/badge.svg)](https://github.com/johannes-mueller/deconz_hue_switch/actions?query=workflow%3Apytest)
 # deCONZ Hue Switch for Home Assistant
 
